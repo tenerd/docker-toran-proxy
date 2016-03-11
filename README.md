@@ -10,7 +10,7 @@ Toran acts as a proxy for Packagist and GitHub. It is meant to be set up on your
 ```bash
 docker run --name toran-proxy -d \
     -p 8080:80 \
-    cedvan/toran-proxy:1.1.6-2
+    cedvan/toran-proxy:1.1.7-1
 ```
 Go with your browser to **localhost:8080**
 
@@ -21,7 +21,7 @@ Files are saved to `/data/toran-proxy` in container. Just mount this volume for 
 ```bash
 docker run --name toran-proxy -d \
     -v /opt/toran-proxy:/data/toran-proxy \
-    cedvan/toran-proxy:1.1.6-2
+    cedvan/toran-proxy:1.1.7-1
 ```
 
 ## Add ssh config for private repository
@@ -30,7 +30,7 @@ docker run --name toran-proxy -d \
 docker run --name toran-proxy -d \
     -p 8443:443 \
     -v /opt/toran-proxy/ssh:/data/toran-proxy/ssh \
-    cedvan/toran-proxy:1.1.6-2
+    cedvan/toran-proxy:1.1.7-1
 ```
 *Files supported : `id_rsa`, `id_rsa.pub` and `known_hosts`*
 
@@ -41,9 +41,18 @@ docker run --name toran-proxy -d \
     -p 8443:443 \
     -e "TORAN_HTTPS=true" \
     -v /opt/toran-proxy/certs:/data/toran-proxy/certs \
-    cedvan/toran-proxy:1.1.6-2
+    cedvan/toran-proxy:1.1.7-1
 ```
 Add **toran-proxy.key** and **toran-proxy.crt** in folder **certs**
+
+## Configure Cron timer
+
+```bash
+docker run --name toran-proxy -d \
+    -p 8443:443 \
+    -e "TORAN_CRON_TIMER=half" \
+    cedvan/toran-proxy:1.1.7-1
+```
 
 ### Generation of Self Signed Certificates
 
@@ -90,7 +99,7 @@ Next add environment variables **VIRTUAL_HOST** and **VIRTUAL_PROTO** to contain
 docker run --name toran-proxy -d \
     -e "VIRTUAL_HOST=toran-proxy.domain.tld" \
     -e "VIRTUAL_PROTO=http" \
-    cedvan/toran-proxy:1.1.6-2
+    cedvan/toran-proxy:1.1.7-1
 ```
 Go with your browser to **http://toran-proxy.domain.tld**
 
@@ -101,7 +110,8 @@ Go with your browser to **http://toran-proxy.domain.tld**
 docker run --name toran-proxy -d \
     -e "VIRTUAL_HOST=toran-proxy.domain.tld" \
     -e "VIRTUAL_PROTO=https" \
-    cedvan/toran-proxy:1.1.6-2
+    -v /opt/toran-proxy/certs:/data/toran-proxy/certs \
+    cedvan/toran-proxy:1.1.7-1
 ```
 Go with your browser to **https://toran-proxy.domain.tld**
 
@@ -117,6 +127,19 @@ docker run --name proxy -d \
     jwilder/nginx-proxy
 ```
 
+Add `auth.json` to composer configuration home folder
+
+```
+{
+    "http-basic": {
+        "toran-proxy.domain.tld": {
+            "username": "myUsername",
+            "password": "myPassword"
+        },
+    }
+}
+```
+
 ## Toran Proxy Options
 
 *Please refer the docker run command options for the `--env-file` flag where you can specify all required environment variables in a single file. This will save you from writing a potentially long docker run command. Alternately you can use fig.*
@@ -125,8 +148,16 @@ Below is the complete list of available options that can be used to customize yo
 
 - **TORAN_HOST**: The hostname of the toran proxy server. Defaults to `localhost`
 - **TORAN_HTTPS**: Set to `true` to enable https support, Defaults to `false`. **Do not forget to add the certificates files**
-- **TORAN_CRON**: Set to `true` to enable cron every minute for download packages in background, Defaults to `true`.
+- **TORAN_CRON_TIMER**: Setup cron job timer. Defaults to `minutes`
+    - `minutes`: All minutes
+    - `five`: All five minutes
+    - `fifteen`: All fifteen minutes
+    - `half`: All thirty minutes
+    - `hour`: All hours
+    - `daily`: All days at 04:00 (Use *TORAN_CRON_TIMER_DAILY_TIME* for customize time)
+- **TORAN_CRON_TIMER_DAILY_TIME**: Set a time for cron job daily timer in `HH:MM` format. Defaults to `04:00`
 - **TORAN_TOKEN_GITHUB**: Add your Github token for ensure download repositories since Github. Default null.
+- **TORAN_PHP_TIMEZONE**: Configure timezone PHP. Default `Europe/Paris`.
 
 ## Toran Proxy License
 

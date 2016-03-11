@@ -1,8 +1,21 @@
 # Changelog
 
-**latest**
+**1.1.7-1**
+- Fix sed in toran.sh
+- Add Cron timer configuration
+- Optimize logs directories
+- Remove launch cron on start to speed up launch
+- Optimize loading permissions
+- Fix bug with token github empty
+
+**1.1.7**
+- Update Toran Proxy to version 1.1.7
+
+**1.1.6-3**
 - Update image FROM to cedvan/ubuntu:14.04.20150414
 - Add ssh config for root user
+- Fix License
+- Fix config github token for composer
 
 **1.1.6-2**
 - Add **cron** every minute for download packages in background
