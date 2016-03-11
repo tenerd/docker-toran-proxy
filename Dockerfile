@@ -22,7 +22,7 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf \
     && sed -i "s/^group\s*=.*/group = root/" /etc/php5/fpm/pool.d/www.conf
 
 # Version Toran Proxy
-ENV TORAN_PROXY_VERSION 1.1.7
+ENV TORAN_PROXY_VERSION 1.3.0
 
 # Download Toran Proxy
 RUN curl -sL https://toranproxy.com/releases/toran-proxy-v${TORAN_PROXY_VERSION}.tgz | tar xzC /tmp \
